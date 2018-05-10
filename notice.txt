@@ -1,0 +1,41 @@
+WELCOME to the marvelous land of Labyrinth.py.
+
+Labyrinth.py is a Doom-like escape labyrinth game. It is displayed in ASCII
+so please be cautious. Thy quest is to find the exit.
+Labyrinth.py is a self challenge about basic 3D viewing in text mode.
+
+WARNINGS:
+Labyrinth.py is only accessible to proud linux users since no testing of the
+curses library has been done by the author.
+
+IMPORTANT WARNINGS:   (press ctrl+C to quit if you do not comply)
+*Labyrinth.py fiddles with curses. This could disrupt your bash session
+display with: unreadable output, messed CRLF, no keyboard echo... In such
+a case, you need to kill your console and start a new one. DO NOT run
+labyrinth.py on a console you NEED to work from afterward.
+*Labyrinth.py also fiddles with keyboard repetition latency settings for 
+smoother navigation. This affects ALL YOUR SYSTEM and will have undesired 
+effects if you work on another program while having a labyrinth.py running.
+DO NOT KEEP A BACKGROUND WINDOW of labyrinth.py running.
+*Labyrinth.py resets keyboard latency setting to default afterward. If for 
+some reason your box does not use default keyboard, DO NOT run labyrinth.py
+on this box. 
+*If for some reason Labyrinth.py did not give you back the default keyboard
+latency setting, please copy and paste the following instruction in a bash
+session to reset:
+> xset r rate 660 25 
+
+Keys:
+Arrows to move			Q to quit		A/Z zoom level
+P to print screen (to lab.screenshot.txt , which you can cat, obviously)
+
+Advice: If you wish not to see that notice anymore, rename notice.txt to
+any other filename.
+
+Finally: Do not resize window while labyrinth is running. After this screen,
+that is.
+
+This program is made available under a GPL licence.
+
+Press <ENTER> to continue
+
