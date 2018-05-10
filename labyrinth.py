@@ -36,8 +36,6 @@ clut=[62,64,0,3,1,5] # grn, blu, grey,yelo,red, grue. Note that 'Light" (+60) in
 #Game specific variables # Unpacked, the lab is as: (0,0) up left. (1,0) is southnward. (0,1) is eastward #value= 0 -> corridor / 1 -> wall. 
 pos=orient=None #are in the packed lab. Just initialized here
 lab=[65535, 34835, 33748, 51749, 37513, 43261, 44805, 32885, 49049, 37027, 54807, 37829, 55853, 34985, 41571, 65535, 2900.0, 2300.0, -1.57]
-#[65535, 34835, 33748, 51749, 37513, 43261, 44805, 32885, 49049, 37027, 54807, 54213, 55853, 34985, 41571, 65535, 2900.0, 2300.0, -1.57]
-#[65535, 34835, 33748, 51749, 37513, 43261, 44805, 32885, 49049, 37829, 54807, 54213, 55853, 34985, 41571, 65535, 2900.0, 2300.0, -1.57]
 
 def getSquare(pos):
     global sqSize
