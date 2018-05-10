@@ -1,8 +1,10 @@
 Goals: 
 ======
 
-* It's a game POC. Labyrinth grinder in basic 3D viewing a la doom.
+* It's a game POC. Labyrinth grinder in simple 3D viewing a la doom.
+* Programmed in python3, using no additionnal library
 * You can have fun with it for a few minuts.
+* Only one map proposed... It's just a POC
 
 Usage:
 ======
