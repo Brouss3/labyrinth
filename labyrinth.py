@@ -274,7 +274,6 @@ def main(stdscr):
 try:
     if isfile("notice.txt"):
        bash("more notice.txt") 
-       print("Press <ENTER> to continue")
        c=input()
     curses.wrapper(main)
 finally:
