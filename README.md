@@ -9,7 +9,7 @@ Goals:
 Usage:
 ======
     
-* ./labyrinth.pi
+* ./labyrinth.py
 
 Ingame Keys:
 ============
