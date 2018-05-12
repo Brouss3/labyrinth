@@ -285,9 +285,7 @@ def main(stdscr):
             c=stdscr.getstr()
             break
         playLoops+=1
-        t-=time()
-        s=max(0,(1.0/targetFPS)+t)
-        sleep(s)
+        sleep(max(0, (1.0/targetFPS)+t-time() ))
     stdscr.getstr()
     bash("xset r rate 660 25") #when exit main loop
     stdscr.getstr()
