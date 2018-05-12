@@ -1,25 +1,22 @@
 #!/usr/bin/python3
 # coding: utf-8
 
-####################
 # Author    : https://github.com/Brouss3
 # Date start: 2018/04/14
 # Version st: 2018/05/03
 # Date end  : 2018/05/10
-# Version   : 0.0.3
+# Version   : 0.0.4
 # system    : linux only.
 
 import curses
 from os import system as bash
 from os.path import isfile
 from locale import setlocale, LC_ALL
-from math import sin,cos, acos, pi, ceil,floor, sqrt, inf, log
+from math import sin,cos, acos, pi, ceil, floor, sqrt, inf, log, pow
 from time import sleep,time
-
 setlocale(LC_ALL, '')
 
-#math constants
-epsilon=10**-9
+epsilon=10**-9  #math constant
 
 #math funcs
 sign = lambda x   : x and (1, -1)[x < 0]
@@ -28,10 +25,15 @@ subV = lambda x,y : (x[0]-y[0],x[1]-y[1])
 smulV= lambda x,y : (x*y[0],x*y[1])
 dist2= lambda x,y : (y[0]-x[0])**2+(y[1]-x[1])**2
 
-#worldview constants
+#world constants
+targetFPS=30.0    #limit it to 40 or the keyboard buffer will empty faster than it fills
 sqSize=200.0
-foc=90     #in fact, is a variable
+foc=90.0        #focal distance. variable
 clut=[62,64,0,3,1,5] # grn, blu, grey,yelo,red, grue. Note that 'Light" (+60) included in gnd/sky = clut[0/1].
+speedMax=300.0/targetFPS
+drag=pow(0.35,1/targetFPS)
+burst=pow(2**20,1/targetFPS)
+angSpeed=0.9/targetFPS
 
 #Game specific variables # Unpacked, the lab is as: (0,0) up left. (1,0) is southnward. (0,1) is eastward #value= 0 -> corridor / 1 -> wall. 
 pos=orient=None #are in the packed lab. Just initialized here
@@ -198,13 +200,29 @@ def testCld(pos,npos,rad):
     p2=(bx,npos[1])
     return p1 if  dist2(pos,p1) > dist2(pos,p2)  else p2
 
+def move(pos,speed,accel,rad):
+    global drag
+    if speed==(0,0) and not accel:
+        return(pos,speed)
+    if accel:
+        speed=addV(speed,accel)
+    speed=smulV(drag,speed)
+    npos=addV(pos,speed)
+    scalSpeed=sqrt(sum(speed[i]**2 for i in range(2)))
+    if scalSpeed>speedMax:
+        speed=smulV(speedMax/scalSpeed,speed)
+        npos=addV(pos,speed)
+    npos=testCld(pos,npos,rad)
+    speed=subV(npos,pos)
+    return(npos,speed)
+    
 def calcAlphas(foc,scrWid):     #precalc anglestoCam depending on foc and scrWid
     deltalpha=acos(foc/(foc**2+(scrWid/2)**2)**0.5)
     return(list(2*deltalpha*c/(scrWid-1)-deltalpha for c in range(scrWid-1,-1,-1)))
 
 def main(stdscr):
-    global lab,foc,sqSize,clut  #game variables
-    global lab,pos,orient       #world variables
+    global foc,sqSize,clut,targetFPS  #game variables
+    global lab,pos,orient                   #world variables
     #init curses screen
     curses.noecho()		#dont echo on getch/str
     curses.cbreak()		#dont wait for \n on getch/str
@@ -219,38 +237,39 @@ def main(stdscr):
     floorSize=(sqSize*labSize[0],sqSize*labSize[1])
     screenSize = (scrHei,scrWid) = stdscr.getmaxyx() 
     npos=pos    #future pos is pos
+    speed=(0.0,0.0)
     c=-1	#last ascii read = None
     cldRad=5.0      #collide radius
     alphas=calcAlphas(foc,scrWid)   #init  cam
-    #mainloop
-    while (113!=c):
+    playLoops=0
+    while (113!=c):      #############  main loop #################
+        t=time()    #start mesure time 
         #read keyboard and change cam data accordingly.
         c = stdscr.getch()
         stdscr.getstr() #empty buffer
         vw=(cos(orient),sin(orient))
-        if c==260:      # key left-> turn left
-            orient+=0.07
-        elif c==261:    # key right->turn right
-            orient-=0.07
-        elif c==259:    #key up -> forward
-            npos=addV(pos,smulV(10,vw))
-        elif c==258:    #key down -> backward
-            npos=subV(pos,smulV(10,vw))
+        accel=False
+        if 260==c:      # key left-> turn left
+            orient+=angSpeed
+        elif 261==c:    # key right->turn right
+            orient-=angSpeed
+        elif 259==c:    #key up -> forward
+            accel=smulV(burst,vw)
+        elif 258==c:    #key down -> backward
+            accel=smulV(-burst,vw)
             stdscr.getstr() #empty buffer bc strangely "backawrd" is not flushed previously.
-        elif c==97: # "a" to zoom out
+        elif 97==c: # "a" to zoom out
             foc-=0 if foc<=30 else 5 if foc <=100 else 10
             alphas=calcAlphas(foc,scrWid)
-        elif c==122: # "z" to zoom in
+        elif 122==c: # "z" to zoom in
             foc+=5 if foc<=100 else 10 if foc<=250 else 0
             alphas=calcAlphas(foc,scrWid)
-        elif c==112: # "p" to print screen
+        elif 112==c: # "p" to print screen
             f=open("lab.screenshot.txt","w")
             f.write(buildScrStr( scrAsClns ,screenSize))
             f.close()
-        t=time()    #mesure time to mod sleep time and stabilize framerate
-        #chk wall collision & correct pos accordingly.
-        npos=testCld(pos,npos,cldRad)
-        pos=npos
+        #acceleration, drag, chk wall collision.
+        pos,speed=move(pos,speed,accel,cldRad)
         #calc new screen values and display
         Lclr,Ldist2=raytraceScene(floorSize,scrWid,alphas,pos,orient)
         scrAsClns=buildScreenAsClns(screenSize,Lclr,Ldist2)
@@ -258,15 +277,17 @@ def main(stdscr):
         stdscr.move(0,0)
         stdscr.refresh()
         if not((0<=pos[0]<floorSize[0]) and (0<=pos[1]<floorSize[1])):
-            print("\rVictory. Now you can rule the world and marry princess Irulz. That or go back to work.")
+            print("\rVictory. Finished in %.2f sec. Now you can marry princess Irulz. That or go back to work."%(playLoops/targetFPS))
             sleep(2)
             c=stdscr.getstr()
             stdscr.nodelay(False)
             stdscr.refresh()
             c=stdscr.getstr()
             break
+        playLoops+=1
         t-=time()
-        sleep(max(0,0.1+t))
+        s=max(0,(1.0/targetFPS)+t)
+        sleep(s)
     stdscr.getstr()
     bash("xset r rate 660 25") #when exit main loop
     stdscr.getstr()
@@ -278,16 +299,3 @@ try:
     curses.wrapper(main)
 finally:
     bash("xset r rate 660 25") #restore default linux keyboard repeat delays 660ms to start repeats at 25 chr per sec
-
-
-
-
-
-
-
-
-
-
-
-
-
