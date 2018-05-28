@@ -9,17 +9,14 @@ Labyrinth.py is only accessible to proud linux users since no testing of the
 curses library has been done by the author.
 
 IMPORTANT WARNINGS:   (press ctrl+C to quit if you do not comply)
-*Labyrinth.py fiddles with curses. This could disrupt your bash session
-display with: unreadable output, messed CRLF, no keyboard echo... In such
-a case, you need to kill your console and start a new one. DO NOT run
-labyrinth.py on a console you NEED to work from afterward.
-*Labyrinth.py also fiddles with keyboard repetition latency settings for 
-smoother navigation. This affects ALL YOUR SYSTEM and will have undesired 
-effects if you work on another program while having a labyrinth.py running.
+*Labyrinth.py fiddles with keyboard repetition latency settings for smoother 
+navigation. This affects ALL YOUR SYSTEM and will have undesired effects if 
+you work on another program while having a labyrinth.py running. Also, do
+not lock screen while game is on. You'd have hard time typing your password.
 DO NOT KEEP A BACKGROUND WINDOW of labyrinth.py running.
 *Labyrinth.py resets keyboard latency setting to default afterward. If for 
-some reason your box does not use default keyboard, DO NOT run labyrinth.py
-on this box. 
+some reason your box does not use default keyboard latency settings, DO NOT 
+run labyrinth.py on this box. 
 *If for some reason Labyrinth.py did not give you back the default keyboard
 latency setting, please copy and paste the following instruction in a bash
 session to reset:
@@ -36,6 +33,3 @@ Finally: Do not resize window while labyrinth is running. After this screen,
 that is.
 
 This program is made available under a GPL licence.
-
-Press <ENTER> to continue
-
